@@ -445,12 +445,6 @@ void AlsaPlayer::initAlsa()
     //	snd_pcm_sw_params_set_stop_threshold(pcm_handle, swparams, frames_);
     snd_pcm_sw_params(handle_, swparams);
 
-    if (snd_pcm_state(handle_) == SND_PCM_STATE_PREPARED)
-    {
-        if ((err = snd_pcm_start(handle_)) < 0)
-            LOG(DEBUG, LOG_TAG) << "Failed to start PCM: " << snd_strerror(err) << "\n";
-    }
-
     if (ctl_ == nullptr)
         initMixer();
 }
