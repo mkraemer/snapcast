@@ -35,7 +35,6 @@ Supported parameters for all source types:
 - `codec`: Override the global codec
 - `sampleformat`: Override the global sample format
 - `chunk_ms`: Override the global `chunk_ms`
-- `dryout_ms`: Supported by non-blocking sourced: when no new data is read from the source, send silence to the clients
 - `controlscript`: Script to control the stream source and read and provide meta data, see [stream_plugin.md](json_rpc_api/stream_plugin.md)
 - `controlscriptparams`: Control script command line arguments, must be url-encoded (use `%20` instead of a space " "), e.g. `--mopidy-host=192.168.42.23%20--debug`
 
@@ -46,17 +45,21 @@ Available audio source types are:
 Captures audio from a named pipe
 
 ```sh
-pipe:///<path/to/pipe>?name=<name>[&mode=create][&dryout_ms=2000]
+pipe:///<path/to/pipe>?name=<name>[&mode=create]
 ```
 
 `mode` can be `create` or `read`. Sometimes your audio source might insist in creating the pipe itself. So the pipe creation mode can by changed to "not create, but only read mode", using the `mode` option set to `read`
+
+**NOTE** With newer kernels using FIFO pipes in a world writeable sticky dir (e.g. `/tmp`) one might also have to turn off `fs.protected_fifos`, as default settings have changed recently: `sudo sysctl fs.protected_fifos=0`. 
+
+See [stackexchange](https://unix.stackexchange.com/questions/503111/group-permissions-for-root-not-working-in-tmp) for more details. You need to run this after each reboot or add it to /etc/sysctl.conf or /etc/sysctl.d/50-default.conf depending on distribution.
 
 ### librespot
 
 Launches librespot and reads audio from stdout
 
 ```sh
-librespot:///<path/to/librespot>?name=<name>[&dryout_ms=2000][&username=<my username>&password=<my password>][&devicename=Snapcast][&bitrate=320][&wd_timeout=7800][&volume=100][&onevent=""][&normalize=false][&autoplay=false][&cache=""][&disable_audio_cache=false][&killall=false][&params=extra-params]
+librespot:///<path/to/librespot>?name=<name>[&username=<my username>&password=<my password>][&devicename=Snapcast][&bitrate=320][&wd_timeout=7800][&volume=100][&onevent=""][&normalize=false][&autoplay=false][&cache=""][&disable_audio_cache=false][&killall=false][&params=extra-params]
 ```
 
 Note that you need to have the librespot binary on your machine and the sampleformat will be set to `44100:16:2`
@@ -87,7 +90,7 @@ Parameters introduced by Snapclient:
 Launches [shairport-sync](https://github.com/mikebrady/shairport-sync) and reads audio from stdout
 
 ```sh
-airplay:///<path/to/shairport-sync>?name=<name>[&dryout_ms=2000][&devicename=Snapcast][&port=5000][&password=<my password>]
+airplay:///<path/to/shairport-sync>?name=<name>[&devicename=Snapcast][&port=5000][&password=<my password>]
 ```
 
 Note that you need to have the shairport-sync binary on your machine and the sampleformat will be set to `44100:16:2`
@@ -97,7 +100,7 @@ Note that you need to have the shairport-sync binary on your machine and the sam
 Parameters used to configure the shairport-sync binary:
 
 - `devicename`: Advertised name
-- `port`: RTSP listening port
+- `port`: RTSP listening port (5000 for Airplay 1, 7000 for Airplay 2)
 - `password`: Password
 - `params`: Optional string appended to the shairport-sync invocation. This allows for arbitrary flags to be passed to shairport-sync, for instance `params=--on-start=start.sh%20--on-stop=stop.sh`. The value has to be properly URL-encoded.
 
@@ -114,7 +117,7 @@ file:///<path/to/PCM/file>?name=<name>
 Launches a process and reads audio from stdout
 
 ```sh
-process:///<path/to/process>?name=<name>[&dryout_ms=2000][&wd_timeout=0][&log_stderr=false][&params=<process arguments>]
+process:///<path/to/process>?name=<name>[&wd_timeout=0][&log_stderr=false][&params=<process arguments>]
 ```
 
 #### Available parameters

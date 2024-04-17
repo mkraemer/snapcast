@@ -1,6 +1,6 @@
 /***
     This file is part of snapcast
-    Copyright (C) 2014-2022  Johannes Pohl
+    Copyright (C) 2014-2024  Johannes Pohl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#ifndef ALSA_PLAYER_HPP
-#define ALSA_PLAYER_HPP
+#pragma once
 
 // local headers
 #include "player.hpp"
@@ -30,6 +29,7 @@
 // standard headers
 #include <chrono>
 #include <optional>
+#include <vector>
 
 
 namespace player
@@ -68,8 +68,8 @@ private:
     void initMixer();
     void uninitMixer();
 
-    bool getHardwareVolume(double& volume, bool& muted) override;
-    void setHardwareVolume(double volume, bool muted) override;
+    bool getHardwareVolume(Volume& volume) override;
+    void setHardwareVolume(const Volume& volume) override;
 
     void waitForEvent();
 
@@ -94,5 +94,3 @@ private:
 };
 
 } // namespace player
-
-#endif

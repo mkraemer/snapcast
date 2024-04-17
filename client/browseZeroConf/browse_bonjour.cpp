@@ -1,8 +1,32 @@
+/***
+    This file is part of snapcast
+    Copyright (C) 2014-2024  Johannes Pohl
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+***/
+
+
+// prototype/interface header file
 #include "browse_bonjour.hpp"
 
+// local headers
+#include "common/aixlog.hpp"
+#include "common/snap_exception.hpp"
+
+// standard headers
 #include <deque>
 #include <iostream>
-#include <memory>
 #ifdef WINDOWS
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
@@ -11,8 +35,6 @@
 #include <sys/socket.h>
 #endif
 
-#include "common/aixlog.hpp"
-#include "common/snap_exception.hpp"
 
 using namespace std;
 
@@ -212,7 +234,7 @@ bool BrowseBonjour::browse(const string& serviceName, mDNSResult& result, int /*
     }
 
     // DNS/mDNS Resolve
-    deque<mDNSResult> resultCollection(resolveCollection.size(), mDNSResult{IPVersion::IPv4, 0, "", "", 0, false});
+    deque<mDNSResult> resultCollection(resolveCollection.size(), mDNSResult{});
     {
         DNSServiceHandle service(new DNSServiceRef(NULL));
         unsigned i = 0;

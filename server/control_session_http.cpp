@@ -1,6 +1,6 @@
 /***
     This file is part of snapcast
-    Copyright (C) 2014-2023  Johannes Pohl
+    Copyright (C) 2014-2024  Johannes Pohl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 // local headers
 #include "common/aixlog.hpp"
 #include "common/message/pcm_chunk.hpp"
+#include "common/utils/file_utils.hpp"
 #include "control_session_ws.hpp"
 #include "stream_session_ws.hpp"
 
@@ -250,7 +251,7 @@ void ControlSessionHttp::handle_request(http::request<Body, http::basic_fields<A
     if (target.empty() || target[0] != '/' || target.find("..") != beast::string_view::npos)
         return send(bad_request("Illegal request-target"));
 
-    static string image_cache_target = "/__image_cache?name=";
+    static const string image_cache_target = "/__image_cache?name=";
     auto pos = target.find(image_cache_target);
     if (pos != std::string::npos)
     {
@@ -281,9 +282,8 @@ void ControlSessionHttp::handle_request(http::request<Body, http::basic_fields<A
 
     if (settings_.doc_root.empty())
     {
-        std::string default_page = "/usr/share/snapserver/index.html";
-        struct stat buffer;
-        if (stat(default_page.c_str(), &buffer) == 0)
+        static constexpr auto default_page = "/usr/share/snapserver/index.html";
+        if (utils::file::exists(default_page))
             path = default_page;
         else
             return send(unconfigured());

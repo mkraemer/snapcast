@@ -1,6 +1,6 @@
 /***
     This file is part of snapcast
-    Copyright (C) 2014-2022  Johannes Pohl
+    Copyright (C) 2014-2024  Johannes Pohl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#ifndef PULSE_PLAYER_HPP
-#define PULSE_PLAYER_HPP
+#pragma once
 
 // local headers
 #include "player.hpp"
@@ -59,8 +58,8 @@ protected:
     void connect();
     void disconnect();
 
-    bool getHardwareVolume(double& volume, bool& muted) override;
-    void setHardwareVolume(double volume, bool muted) override;
+    bool getHardwareVolume(Volume& volume) override;
+    void setHardwareVolume(const Volume& volume) override;
 
     void triggerVolumeUpdate();
 
@@ -91,5 +90,3 @@ protected:
 };
 
 } // namespace player
-
-#endif

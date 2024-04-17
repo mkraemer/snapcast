@@ -9,6 +9,10 @@ The goal is to build the following chain:
 audio player software -> snapfifo -> snapserver -> network -> snapclient -> alsa
 ```
 
+**NOTE** With newer kernels using FIFO pipes in a world writeable sticky dir (e.g. `/tmp`) one might also have to turn off `fs.protected_fifos`, as default settings have changed recently: `sudo sysctl fs.protected_fifos=0`. 
+
+See [stackexchange](https://unix.stackexchange.com/questions/503111/group-permissions-for-root-not-working-in-tmp) for more details. You need to run this after each reboot or add it to /etc/sysctl.conf or /etc/sysctl.d/50-default.conf depending on distribution.
+
 ## Streams
 
 Snapserver can read audio from several sources, which are configured in the `snapserver.conf` file (default location is `/etc/snapserver.conf`); the config file can be changed with the `-c` parameter.  
@@ -211,7 +215,8 @@ Although this _might_ be a quick and convenient way to set up an Airplay source 
     * `autoreconf -i -f` 
     * `./configure --with-stdout --with-avahi --with-ssl=openssl --with-metadata`
  3. Copy the `shairport-sync` binary somewhere to your `PATH`, e.g. `/usr/local/bin/`
- 4. Configure snapserver with `source = airplay:///shairport-sync?name=Airplay[&devicename=Snapcast][&port=5000]`
+ 4. Configure snapserver with `source = airplay:///shairport-sync?name=Airplay[&devicename=Snapcast][&port=PORT]`
+    * `PORT` is 5000 for Airplay 1 and 7000 for Airplay 2 
 
 ### Spotify
 
@@ -235,7 +240,11 @@ For example, you could install the minimalist **mpv** media player to pick up We
 
 ```ini
 [stream]
-source = process:///usr/bin/mpv?name=Webradio&sampleformat=48000:16:2&params=http://129.122.92.10:88/broadwavehigh.mp3 --no-terminal --audio-display=no --audio-channels=stereo --audio-samplerate=48000 --audio-format=s16 --ao=pcm:file=/dev/stdout
+# mpv < 0.21.0
+#source = process:///usr/bin/mpv?name=Webradio&sampleformat=48000:16:2&params=http://129.122.92.10:88/broadwavehigh.mp3 --no-terminal --audio-display=no --audio-channels=stereo --audio-samplerate=48000 --audio-format=s16 --ao=pcm:file=/dev/stdout
+# mpv >= 0.21.0
+source = process:///usr/bin/mpv?name=Webradio&sampleformat=48000:16:2&params=http://129.122.92.10:88/broadwavehigh.mp3 --no-terminal --audio-display=no --audio-channels=stereo --audio-samplerate=48000 --audio-format=s16 --ao=pcm --ao-pcm-file=/dev/stdout
+
 ```
 
 ### Line-in
@@ -283,6 +292,7 @@ Audio can be played directly through the line-in via ALSA. The following guide w
    ```
 
 #### Pipe Method
+
 Audio captured from line-in can be redirected to the snapserver's pipe, e.g. by using:
 
 ##### cpiped

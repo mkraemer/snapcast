@@ -1,6 +1,6 @@
 /***
     This file is part of snapcast
-    Copyright (C) 2014-2021  Johannes Pohl
+    Copyright (C) 2014-2024  Johannes Pohl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,12 +16,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#include <iostream>
 
+// prototype/interface header file
+#include "flac_encoder.hpp"
+
+// local headers
 #include "common/aixlog.hpp"
 #include "common/snap_exception.hpp"
 #include "common/str_compat.hpp"
-#include "flac_encoder.hpp"
+
+// 3rd party headers
+#include "FLAC/metadata.h"
+
+// standard headers
+#include <iostream>
+
 
 using namespace std;
 
@@ -34,6 +43,8 @@ FlacEncoder::FlacEncoder(const std::string& codecOptions) : Encoder(codecOptions
 {
     headerChunk_.reset(new msg::CodecHeader("flac"));
     pcmBuffer_ = static_cast<FLAC__int32*>(malloc(pcmBufferSize_ * sizeof(FLAC__int32)));
+    metadata_[0] = nullptr;
+    metadata_[1] = nullptr;
 }
 
 

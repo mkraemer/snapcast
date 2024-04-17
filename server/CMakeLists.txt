@@ -21,7 +21,6 @@ set(SERVER_SOURCES
     streamreader/pcm_stream.cpp
     streamreader/tcp_stream.cpp
     streamreader/pipe_stream.cpp
-    streamreader/posix_stream.cpp
     streamreader/file_stream.cpp
     streamreader/airplay_stream.cpp
     streamreader/librespot_stream.cpp
@@ -65,8 +64,8 @@ else()
      AND VORBIS_FOUND
      AND VORBISENC_FOUND)
     list(APPEND SERVER_SOURCES encoder/ogg_encoder.cpp)
-    list(APPEND SERVER_LIBRARIES ${OGG_LIBRARIES} ${VORBIS_LIBRARIES}
-         ${VORBISENC_LIBRARIES})
+    list(APPEND SERVER_LIBRARIES ${VORBIS_LIBRARIES} ${VORBISENC_LIBRARIES}
+         ${OGG_LIBRARIES})
     list(APPEND SERVER_INCLUDE ${OGG_INCLUDE_DIRS} ${VORBIS_INCLUDE_DIRS}
          ${VORBISENC_INCLUDE_DIRS})
   endif(
@@ -124,8 +123,14 @@ else()
     FILES etc/index.html
     COMPONENT server
     DESTINATION ${CMAKE_INSTALL_DATADIR}/snapserver)
-  install(DIRECTORY etc/snapweb/
-          DESTINATION ${CMAKE_INSTALL_DATADIR}/snapserver/snapweb)
+  if(SNAPWEB_DIR)
+    install(DIRECTORY "${SNAPWEB_DIR}/"
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/snapserver/snapweb)
+  else()
+    install(DIRECTORY etc/snapweb/
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/snapserver/snapweb)
+  endif()
+
   install(
     FILES etc/plug-ins/meta_mpd.py etc/plug-ins/meta_mopidy.py
           etc/plug-ins/meta_librespot-java.py

@@ -1,6 +1,6 @@
 /***
     This file is part of snapcast
-    Copyright (C) 2014-2023  Johannes Pohl
+    Copyright (C) 2014-2024  Johannes Pohl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,27 +16,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***/
 
-#ifndef STREAM_HPP
-#define STREAM_HPP
+#pragma once
 
 // local headers
-#include "common/message/message.hpp"
 #include "common/message/pcm_chunk.hpp"
-#include "common/queue.h"
+#include "common/queue.hpp"
 #include "common/resampler.hpp"
 #include "common/sample_format.hpp"
+#include "common/utils/logging.hpp"
 #include "double_buffer.hpp"
 
 // 3rd party headers
-
-// standard headers
-#include <atomic>
-#include <deque>
-#include <memory>
-
 #ifdef HAS_SOXR
 #include <soxr.h>
 #endif
+
+// standard headers
+#include <atomic>
+#include <memory>
+
 
 
 /// Time synchronized audio stream
@@ -134,8 +132,7 @@ private:
     mutable std::mutex mutex_;
 
     bool hard_sync_;
+
+    /// Log "failed to get chunk" only once per second
+    utils::logging::TimeConditional time_cond_;
 };
-
-
-
-#endif
